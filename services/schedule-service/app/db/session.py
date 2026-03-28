@@ -4,12 +4,12 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     DATABASE_URL: str
-    SERVICE_NAME: str | None = None   # ✅ allow SERVICE_NAME
-    PORT: int | None = None           # ✅ allow PORT
-    DOCTOR_SERVICE_URL: str | None = None  # ✅ allow doctor service URL
+    SERVICE_NAME: str | None = None   # allow SERVICE_NAME
+    PORT: int | None = None           # allow PORT
+    DOCTOR_SERVICE_URL: str | None = None  # allow doctor service URL
 
     model_config = {
-        "extra": "ignore",            # ✅ ignore extra .env values
+        "extra": "ignore",            # ignore extra .env values
         "env_file": ".env"
     }
 

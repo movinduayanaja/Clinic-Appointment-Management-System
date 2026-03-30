@@ -1,8 +1,6 @@
 from pydantic import BaseModel
 from datetime import date, time
-from typing import Optional
-from app.models.appointment import AppointmentStatus
-
+from typing import Optional, Literal
 
 class AppointmentCreate(BaseModel):
     patient_id: int
@@ -12,6 +10,7 @@ class AppointmentCreate(BaseModel):
     start_time: time
     end_time: time
     reason: str
+    status: Optional[Literal["BOOKED", "COMPLETED", "CANCELLED"]] = "BOOKED"
 
 
 class AppointmentUpdate(BaseModel):
@@ -22,20 +21,4 @@ class AppointmentUpdate(BaseModel):
     start_time: Optional[time] = None
     end_time: Optional[time] = None
     reason: Optional[str] = None
-    status: Optional[AppointmentStatus] = None
-
-
-class AppointmentResponse(BaseModel):
-    appointment_id: int
-    patient_id: int
-    doctor_id: int
-    schedule_id: int
-    appointment_date: date
-    start_time: time
-    end_time: time
-    reason: str
-    status: AppointmentStatus
-
-    model_config = {
-        "from_attributes": True
-    }
+    status: Optional[Literal["BOOKED", "COMPLETED", "CANCELLED"]] = None

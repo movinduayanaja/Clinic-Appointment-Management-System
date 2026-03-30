@@ -1,5 +1,4 @@
-from pydantic import BaseModel, ConfigDict
-from datetime import datetime
+from pydantic import BaseModel
 
 class MedicalRecordBase(BaseModel):
     appointment_id: int
@@ -14,11 +13,3 @@ class MedicalRecordCreate(MedicalRecordBase):
 class MedicalRecordUpdate(BaseModel):
     diagnosis: str | None = None
     treatment_notes: str | None = None
-
-class MedicalRecordResponse(MedicalRecordBase):
-    record_id: int
-    created_at: datetime
-    patient_name: str | None = None
-    doctor_name: str | None = None
-
-    model_config = ConfigDict(from_attributes=True)

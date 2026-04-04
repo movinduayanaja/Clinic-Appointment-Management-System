@@ -1,5 +1,10 @@
 fastapi
 uvicorn[standard]
-httpx
+sqlalchemy
+psycopg[binary]
+pydantic
 pydantic-settings
 python-dotenv
+httpx
+email-validator
+alembic

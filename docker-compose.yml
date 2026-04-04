@@ -14,6 +14,103 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./infra/postgres/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  patient-service:
+    build: ./services/patient-service
+    container_name: patient-service
+    restart: unless-stopped
+    env_file:
+      - ./services/patient-service/.env.docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8001:8001"
+
+  doctor-service:
+    build: ./services/doctor-service
+    container_name: doctor-service
+    restart: unless-stopped
+    env_file:
+      - ./services/doctor-service/.env.docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8002:8002"
+
+  schedule-service:
+    build: ./services/schedule-service
+    container_name: schedule-service
+    restart: unless-stopped
+    env_file:
+      - ./services/schedule-service/.env.docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      doctor-service:
+        condition: service_started
+    ports:
+      - "8003:8003"
+
+  appointment-service:
+    build: ./services/appointment-service
+    container_name: appointment-service
+    restart: unless-stopped
+    env_file:
+      - ./services/appointment-service/.env.docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      patient-service:
+        condition: service_started
+      doctor-service:
+        condition: service_started
+      schedule-service:
+        condition: service_started
+    ports:
+      - "8004:8004"
+
+  medical-record-service:
+    build: ./services/medical-record-service
+    container_name: medical-record-service
+    restart: unless-stopped
+    env_file:
+      - ./services/medical-record-service/.env.docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      patient-service:
+        condition: service_started
+      doctor-service:
+        condition: service_started
+    ports:
+      - "8005:8005"
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    restart: unless-stopped
+    env_file:
+      - ./api-gateway/.env.docker
+    depends_on:
+      patient-service:
+        condition: service_started
+      doctor-service:
+        condition: service_started
+      schedule-service:
+        condition: service_started
+      appointment-service:
+        condition: service_started
+      medical-record-service:
+        condition: service_started
+    ports:
+      - "8000:8000"
 
 volumes:
   postgres_data:

@@ -18,7 +18,9 @@ settings = Settings()
 
 
 async def fetch_schedule(schedule_id: int):
-    url = f"{settings.SCHEDULE_SERVICE_URL}/schedules/{schedule_id}"
+    # FIX: include /api/v1 and NO trailing slash
+    url = f"{settings.SCHEDULE_SERVICE_URL}/api/v1/schedules/{schedule_id}"
+
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(url)
@@ -26,4 +28,5 @@ async def fetch_schedule(schedule_id: int):
                 return response.json()
         except Exception:
             return None
+
     return None

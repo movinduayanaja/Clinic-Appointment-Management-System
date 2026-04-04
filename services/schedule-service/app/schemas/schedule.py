@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from datetime import date, time
 from app.models.schedule import ScheduleStatus
 
@@ -9,12 +9,22 @@ class ScheduleBase(BaseModel):
     end_time: time
     status: ScheduleStatus
 
+    @field_validator("status")
+    @classmethod
+    def validate_status(cls, value):
+        if value not in ScheduleStatus:
+            raise ValueError(
+                "Status must be one of: AVAILABLE, BOOKED, CANCELLED"
+            )
+        return value
+
 class ScheduleCreate(ScheduleBase):
     pass
 
 class ScheduleResponse(ScheduleBase):
     schedule_id: int
-    doctor_name: str | None = None  #  added doctor name
+    doctor_name: str | None = None
 
-    class Config:
-        from_attributes = True  #  updated from orm_mode
+    model_config = {
+        "from_attributes": True
+    }
